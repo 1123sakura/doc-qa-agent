@@ -83,13 +83,13 @@ def build_system_prompt() -> str:
 
 def build_graph(api_key: str | None = None):
     if api_key is None:
-        api_key = os.environ.get("DEEPSEEK_API_KEY")
+        api_key = os.environ.get("DASHSCOPE_API_KEY")
     if not api_key:
-        raise ValueError("未提供 API Key：请在网页侧边栏输入，或设置环境变量 DEEPSEEK_API_KEY")
+        raise ValueError("未提供 API Key：请在网页侧边栏输入，或设置环境变量 DASHSCOPE_API_KEY")
     model = ChatOpenAI(
-        model="deepseek-chat",
+        model="qwen-plus",
         api_key=api_key,
-        base_url="https://api.deepseek.com/v1",
+        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         temperature=0,
     )
     model_with_tools = model.bind_tools(TOOLS)
@@ -124,9 +124,9 @@ def chat_once(graph, history, user_input: str) -> str:
 
 def main():
     # 命令行模式：交互式读取 Key（网页模式不会走到这里，避免卡死）
-    api_key = os.environ.get("DEEPSEEK_API_KEY")
+    api_key = os.environ.get("DASHSCOPE_API_KEY")
     if not api_key:
-        api_key = getpass.getpass("请输入 DeepSeek API Key: ").strip()
+        api_key = getpass.getpass("请输入阿里云 DashScope API Key: ").strip()
     graph = init_agent(api_key=api_key)
     print("文档问答 Agent 已就绪。直接提问，它会先查 docs/ 再回答。")
     print("（输入 quit 退出）\n")

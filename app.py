@@ -9,7 +9,7 @@
 """
 import os
 
-# 自动从 .env 文件加载 DEEPSEEK_API_KEY 等环境变量
+# 自动从 .env 文件加载 DASHSCOPE_API_KEY 等环境变量
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -29,16 +29,16 @@ st.caption("基于你上传的文档，先检索再回答，答案带引用来�
 
 
 # ---------- 侧边栏（只放设置和说明，记忆等 agent 加载后再显示）----------
-api_key = os.environ.get("DEEPSEEK_API_KEY", "")
+api_key = os.environ.get("DASHSCOPE_API_KEY", "")
 
 with st.sidebar:
     st.header("设置")
 
     if not api_key:
         api_key = st.text_input(
-            "DeepSeek API Key",
+            "阿里云 DashScope API Key",
             type="password",
-            help="不填写则使用环境变量 DEEPSEEK_API_KEY",
+            help="不填写则使用环境变量 DASHSCOPE_API_KEY",
         )
 
     st.divider()
@@ -52,7 +52,7 @@ with st.sidebar:
 
 # ---------- 没有 Key 时直接停掉，不加载 Agent ----------
 if not api_key:
-    st.info("👈 请在左侧侧边栏输入你的 DeepSeek API Key，输入后即可提问。")
+    st.info("👈 请在左侧侧边栏输入你的阿里云 DashScope API Key，输入后即可提问。")
     st.stop()
 
 
