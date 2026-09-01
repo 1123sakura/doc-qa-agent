@@ -10,8 +10,10 @@
 import os
 import glob
 
-# HuggingFace 在国内常被墙，先切到国内镜像；必须在任何 huggingface_hub 相关 import 之前设置。
-os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
+# HuggingFace 在国内常被墙，默认切到国内镜像；但允许部署平台用环境变量覆盖
+# （例如 Streamlit Cloud 等海外服务器应设为 https://huggingface.co，否则下不动模型）。
+# 用 setdefault：仅当环境未设置 HF_ENDPOINT 时才生效，已设置则尊重之。
+os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
 
 # 固定缓存目录：保证 uv run 和 PyCharm 运行配置命中同一份模型缓存，
 # 避免每次启动都重新下载 bge 模型（~90MB），这是加载慢的主因。
