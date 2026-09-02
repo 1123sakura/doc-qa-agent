@@ -1,15 +1,15 @@
-# 文档问答 Agent · 依赖清单（本地验证可运行，锁版本避免冲突）
-streamlit==1.62.0
-langchain-community==0.4.2
-langchain-huggingface==1.2.2
-langchain-openai==1.5.1
-langchain-text-splitters==1.1.2
-langchain-core==1.5.6
-langgraph==1.2.11
-faiss-cpu==1.15.0
-sentence-transformers==6.0.0
-huggingface_hub==1.28.0
-numpy==2.5.2
-requests==2.34.2
-openai==3.2.0
-python-dotenv==1.0.1
+# 文档问答 Agent · 依赖清单（部署环境使用宽松版本，避免官方 PyPI 找不到精确版本而卡死）
+streamlit>=1.62.0
+langchain-community>=0.4.2
+langchain-huggingface>=1.2.2
+langchain-openai>=1.5.1
+langchain-text-splitters>=1.1.2
+langchain-core>=1.5.6
+langgraph>=1.2.11
+faiss-cpu>=1.15.0
+sentence-transformers>=6.0.0
+huggingface_hub>=1.28.0
+numpy>=2.0.0
+requests>=2.32.0
+openai>=1.0.0
+python-dotenv>=1.0.1
