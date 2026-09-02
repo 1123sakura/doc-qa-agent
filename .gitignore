@@ -10,6 +10,7 @@ __pycache__/
 
 # 向量索引（本地生成，体积大）
 faiss_index/
+faiss_index_dashscope/
 
 # uv 锁定文件（Streamlit Cloud 会强制使用，但本地和云端环境差异大，不提交）
 uv.lock

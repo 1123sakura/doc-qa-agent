@@ -6,17 +6,17 @@
 name = "doc-qa-agent"
 version = "0.1.0"
 description = "文档问答 Agent · 基于 LangGraph + Streamlit"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
-    "streamlit==1.62.0",
-    "python-dotenv==1.2.3",
-    "openai==3.2.0",
-    "langchain-core==1.5.6",
-    "langchain-community==0.4.2",
-    "langgraph==1.2.11",
-    "langchain-openai==1.5.1",
-    "langchain-text-splitters==1.1.2",
-    "faiss-cpu==1.15.0",
-    "requests==2.34.2",
+    "streamlit>=1.40.0",
+    "python-dotenv>=1.0.0",
+    "openai>=1.60.0",
+    "langchain-core>=0.3.0",
+    "langchain-community>=0.3.0",
+    "langgraph>=0.2.0",
+    "langchain-openai>=0.3.0",
+    "langchain-text-splitters>=0.3.0",
+    "faiss-cpu>=1.9.0",
     "dashscope>=1.20.0",
+    "requests>=2.32.0",
 ]

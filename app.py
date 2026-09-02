@@ -34,6 +34,12 @@ def _init_graph_cached(key: str):
 # ---------- 侧边栏（只放设置和说明，记忆等 agent 加载后再显示）----------
 api_key = os.environ.get("DASHSCOPE_API_KEY", "")
 
+# 调试日志：确认环境变量是否正确加载（不打印完整 Key）
+if api_key:
+    print(f"[DEBUG] DASHSCOPE_API_KEY loaded: length={len(api_key)}, prefix={api_key[:10]}..., suffix=...{api_key[-5:]}")
+else:
+    print("[DEBUG] DASHSCOPE_API_KEY NOT loaded from environment")
+
 with st.sidebar:
     st.header("设置")
 
