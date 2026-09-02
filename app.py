@@ -32,23 +32,22 @@ def _init_graph_cached(key: str):
 
 
 # ---------- 侧边栏（只放设置和说明，记忆等 agent 加载后再显示）----------
-api_key = os.environ.get("DASHSCOPE_API_KEY", "")
+env_key = os.environ.get("DASHSCOPE_API_KEY", "").strip()
 
 # 调试日志：确认环境变量是否正确加载（不打印完整 Key）
-if api_key:
-    print(f"[DEBUG] DASHSCOPE_API_KEY loaded: length={len(api_key)}, prefix={api_key[:10]}..., suffix=...{api_key[-5:]}")
+if env_key:
+    print(f"[DEBUG] DASHSCOPE_API_KEY(env) loaded: length={len(env_key)}, prefix={env_key[:10]}..., suffix=...{env_key[-5:]}")
 else:
     print("[DEBUG] DASHSCOPE_API_KEY NOT loaded from environment")
 
 with st.sidebar:
     st.header("设置")
-
-    if not api_key:
-        api_key = st.text_input(
-            "阿里云 DashScope API Key",
-            type="password",
-            help="不填写则使用环境变量 DASHSCOPE_API_KEY",
-        )
+    st.caption("临时测试可直接在下方粘贴完整 Key；留空则用 Secrets 里的环境变量。")
+    manual_key = st.text_input(
+        "阿里云 DashScope API Key（可选）",
+        type="password",
+        help="直接粘贴完整 Key 可绕过 Secrets；留空则使用环境变量 DASHSCOPE_API_KEY",
+    )
 
     st.divider()
     st.markdown("""
@@ -57,6 +56,10 @@ with st.sidebar:
     - 首次提问时会调用 DashScope Embedding 构建/加载索引
     - 回答基于 `docs/` 里的文档内容
     """)
+
+
+# ---------- 决定最终使用的 Key：手动输入优先，否则用环境变量 ----------
+api_key = manual_key.strip() if manual_key.strip() else env_key
 
 
 # ---------- 没有 Key 时直接停掉，不加载 Agent ----------
