@@ -11,9 +11,6 @@
 import os
 import getpass
 
-# 必须在任何可能引入 huggingface_hub 的 import 之前设置国内镜像
-os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
-
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 from langgraph.graph import StateGraph, START, END

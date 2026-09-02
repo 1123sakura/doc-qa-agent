@@ -24,6 +24,13 @@ st.title("📚 文档问答 Agent")
 st.caption("基于你上传的文档，先检索再回答，答案带引用来源。")
 
 
+# ---------- 缓存初始化 Agent（避免重复加载，同时避免启动黑屏）----------
+@st.cache_resource(show_spinner=False)
+def _init_graph_cached(key: str):
+    from agent import init_agent
+    return init_agent(key)
+
+
 # ---------- 侧边栏（只放设置和说明，记忆等 agent 加载后再显示）----------
 api_key = os.environ.get("DASHSCOPE_API_KEY", "")
 
@@ -65,24 +72,30 @@ for msg in st.session_state.messages:
 user_input = st.chat_input("请输入你的问题，例如：年假怎么请？")
 
 if user_input:
-    # 显示用户消息
     st.session_state.messages.append({"role": "user", "content": user_input})
-    with st.chat_message("user"):
-        st.markdown(user_input)
+    st.rerun()
 
-    # 调用 Agent
-    with st.chat_message("assistant"):
-        try:
-            # 首次提问才加载 Agent 核心（避免启动黑屏的关键）
-            if "graph" not in st.session_state:
-                with st.spinner("首次启动，正在加载 Agent 核心（约 15-30 秒，请稍候）..."):
-                    from agent import init_agent
-                    st.session_state.graph = init_agent(api_key)
 
-            graph = st.session_state.graph
-            from langchain_core.messages import HumanMessage, AIMessage
-            from agent import chat_once
+# ---------- 如果最后一条是用户消息，则生成回复 ----------
+needs_reply = (
+    st.session_state.messages
+    and st.session_state.messages[-1]["role"] == "user"
+)
 
+if needs_reply:
+    user_input = st.session_state.messages[-1]["content"]
+
+    # 先确保 graph 已初始化（不在 chat_message 内部做 import，避免 DOM 同步问题）
+    if "graph" not in st.session_state:
+        with st.spinner("首次启动，正在初始化 Agent（约 10-20 秒）..."):
+            st.session_state.graph = _init_graph_cached(api_key)
+
+    graph = st.session_state.graph
+    from langchain_core.messages import HumanMessage, AIMessage
+    from agent import chat_once
+
+    try:
+        with st.chat_message("assistant"):
             with st.spinner("正在检索文档并思考中..."):
                 history = []
                 for m in st.session_state.messages[:-1]:
@@ -93,16 +106,16 @@ if user_input:
 
                 reply = chat_once(graph, history, user_input)
 
-            st.markdown(reply)
-            st.session_state.messages.append({"role": "assistant", "content": reply})
-        except Exception as e:
-            st.error(
-                f"⚠️ 调用失败：{e}\n\n"
-                "常见原因：API Key 无效 / 网络不通 / 额度不足。请检查后重试。"
-            )
+        st.session_state.messages.append({"role": "assistant", "content": reply})
+        st.rerun()
+    except Exception as e:
+        st.error(
+            f"⚠️ 调用失败：{e}\n\n"
+            "常见原因：API Key 无效 / 网络不通 / 额度不足。请检查后重试。"
+        )
 
 
-# ---------- Agent 已加载后，再显示长期记忆 ----------
+# ---------- 长期记忆 ----------
 if "graph" in st.session_state:
     with st.sidebar:
         st.divider()
