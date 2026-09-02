@@ -10,26 +10,17 @@
 import os
 import glob
 
-# HuggingFace 在国内常被墙，默认切到国内镜像；但允许部署平台用环境变量覆盖
-# （例如 Streamlit Cloud 等海外服务器应设为 https://huggingface.co，否则下不动模型）。
-# 用 setdefault：仅当环境未设置 HF_ENDPOINT 时才生效，已设置则尊重之。
-os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
-
-# 固定缓存目录：保证 uv run 和 PyCharm 运行配置命中同一份模型缓存，
-# 避免每次启动都重新下载 bge 模型（~90MB），这是加载慢的主因。
-os.environ.setdefault("HF_HOME", os.path.join(os.path.expanduser("~"), ".cache", "huggingface"))
-
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import DashScopeEmbeddings
 from langchain_core.tools import tool
 
 DOCS_DIR = "docs"            # 把你的文档（.txt/.md/.pdf）放进这个文件夹
-INDEX_DIR = "faiss_index"    # 建好的向量索引会存这里，下次直接加载
-EMBED_MODEL = "BAAI/bge-small-zh-v1.5"   # 中文友好、本地运行、体积小
+INDEX_DIR = "faiss_index_dashscope"    # 建好的向量索引会存这里，下次直接加载
+EMBED_MODEL = "text-embedding-v3"      # DashScope 嵌入模型（走 API，无需本地下载）
 
-# 缓存 embeddings 实例，避免每次提问都重新加载模型（否则网页版会很慢）
+# 缓存 embeddings 实例，避免每次提问都重新初始化
 _EMBEDDINGS_CACHE = None
 # 缓存向量库实例，避免每次提问都从磁盘重载 FAISS 索引（否则每次问答都要读盘）
 _VECTORSTORE_CACHE = None
@@ -57,14 +48,15 @@ def split_documents(docs, chunk_size: int = 400, chunk_overlap: int = 50):
 
 
 def get_embeddings():
-    # normalize_embeddings=True 是 bge 模型的要求，能提升检索质量
     global _EMBEDDINGS_CACHE
     if _EMBEDDINGS_CACHE is None:
-        print("[首次加载嵌入模型，请稍候...]")
-        _EMBEDDINGS_CACHE = HuggingFaceEmbeddings(
-            model_name=EMBED_MODEL,
-            model_kwargs={"device": "cpu"},
-            encode_kwargs={"normalize_embeddings": True},
+        api_key = os.environ.get("DASHSCOPE_API_KEY")
+        if not api_key:
+            raise ValueError("未设置 DASHSCOPE_API_KEY，无法调用 DashScope Embedding")
+        print("[首次调用 DashScope Embedding，请稍候...]")
+        _EMBEDDINGS_CACHE = DashScopeEmbeddings(
+            model=EMBED_MODEL,
+            dashscope_api_key=api_key,
         )
     return _EMBEDDINGS_CACHE
 

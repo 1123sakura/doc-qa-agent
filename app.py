@@ -18,10 +18,6 @@ except ImportError:
 
 import streamlit as st
 
-# 国内默认走镜像；部署到国外云时，在环境变量里设 HF_ENDPOINT=https://huggingface.co 覆盖即可
-os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
-
-
 # ---------- 页面骨架（先显示，不 import 任何重依赖）----------
 st.set_page_config(page_title="文档问答 Agent", page_icon="📚", layout="centered")
 st.title("📚 文档问答 Agent")
@@ -45,7 +41,7 @@ with st.sidebar:
     st.markdown("""
     **项目说明**
     - 把 `.txt` / `.md` / `.pdf` 放进 `docs/`
-    - 首次提问时会加载嵌入模型并构建/加载索引
+    - 首次提问时会调用 DashScope Embedding 构建/加载索引
     - 回答基于 `docs/` 里的文档内容
     """)
 
