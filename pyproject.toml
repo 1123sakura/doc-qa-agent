@@ -1,0 +1,29 @@
+# 文档问答 Agent · 项目配置
+# 说明：Streamlit Cloud 使用 uv 安装依赖，会优先读取本文件。
+# 本地开发仍可用 uv pip install -r requirements.txt
+
+[project]
+name = "doc-qa-agent"
+version = "0.1.0"
+description = "文档问答 Agent · 基于 LangGraph + Streamlit"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit==1.62.0",
+    "python-dotenv==1.2.3",
+    "openai==3.2.0",
+    "langchain-core==1.5.6",
+    "langchain-community==0.4.2",
+    "langchain-huggingface==1.2.2",
+    "langchain-openai==1.5.1",
+    "langgraph==1.2.11",
+    "langchain-text-splitters==1.1.2",
+    "faiss-cpu==1.15.0",
+    "sentence-transformers==6.0.0",
+    "huggingface-hub==1.28.0",
+    "numpy==2.5.2",
+    "requests==2.34.2",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
